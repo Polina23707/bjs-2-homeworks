@@ -1,14 +1,9 @@
 ﻿function parseCount(string) {
-  try {
-    let result = Number.parseFloat(string);
+  let result = Number.parseFloat(string);
     if (Number.isNaN(result)) {
       throw new Error("Невалидное значение")
     }
-    console.log(result);
     return result;
-  } catch (error) {
-      console.log(error);
-  }
 }
 
 
