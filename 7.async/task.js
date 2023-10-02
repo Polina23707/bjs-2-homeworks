@@ -9,58 +9,50 @@ class AlarmClock {
       throw new Error('Отсутствуют обязательные аргументы');
     }
 
-    this.time = time;
-    this.callback = callback;
-    this.canCall = true;
-
-    for (let i = 0; i < this.alarmCollection.length ; i++) {
-      if (this.time === time) {
-        console.warn('Уже присутствует звонок на это же время');
-      }
+    if (this.alarmCollection.some(alarm => alarm.time === time)) {
+      console.warn('Уже присутствует звонок на это же время');
     }
 
     this.alarmCollection.push({callback, time, canCall: true})
   }
 
   removeClock(time) {
-    let deletedTime = time;
-    let newCollection = this.alarmCollection.filter(function(item) {
-      return item.time !== deletedTime;
-    });
-    this.alarmCollection = newCollection;
+    let newCollection = this.alarmCollection.filter(item => item.time !== time);
+    console.log(newCollection);
+    return this.alarmCollection = newCollection;
   }
 
   getCurrentFormattedTime() {
-    const currentTime = new Date();
-    let currentHours = currentTime.getHours();
-    let currentMinutes = currentTime.getMinutes();
-
-    let formattedTime = currentHours + ':' + currentMinutes;
-    console.log(formattedTime);
-    return formattedTime;
+    const currentTime = new Date().toLocaleTimeString("ru-Ru", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    console.log(currentTime);
+    return currentTime;
   }
 
   start() {
-    if (this.intervalId > 0) {
+    if (this.intervalId) {
       return;
     }
+
+    let currentTime = this.getCurrentFormattedTime();
+
     this.intervalId = setInterval(this.alarmCollection.forEach((clock) => {
-      if (this.getCurrentFormattedTime() === this.time && this.canCall === true) {
-        this.canCall = false;
-        this.callback();
+      if (clock.time === currentTime && clock.canCall === true) {
+        clock.canCall = false;
+        clock.callback();
       }
     }), 1000)
   }
 
   stop() {
-    clearInterval();
+    clearInterval(this.intervalId);
     this.intervalId = null;
   }
 
   resetAllCalls() {
-    this.alarmCollection.forEach((clock) => {
-      this.canCall = true;
-    })
+    this.alarmCollection.forEach((alarm) => alarm.canCall = true)
   }
 
   clearAlarms() {
@@ -70,16 +62,13 @@ class AlarmClock {
 
 }
 
-let clockFirst = new AlarmClock();
-console.log(clockFirst);
-clockFirst.addClock('22:00' , this.start);
-clockFirst.addClock('20:00' , this.start);
-clockFirst.addClock('02:00' , this.start);
-console.log(clockFirst.alarmCollection);
-clockFirst.removeClock('20:00');
-console.log(clockFirst.alarmCollection);
-clockFirst.getCurrentFormattedTime();
-console.log(clockFirst.alarmCollection);
-clockFirst.resetAllCalls();
-// clockFirst.clearAlarms();
-console.log(clockFirst.alarmCollection);
+// let clockFirst = new AlarmClock();
+// console.log(clockFirst);
+// clockFirst.addClock('22:00' , clockFirst.start);
+// clockFirst.addClock('20:00' , clockFirst.start);
+// clockFirst.addClock('00:00' , clockFirst.start);
+// clockFirst.addClock('19:25' , clockFirst.start);
+// clockFirst.addClock('19:57' , clockFirst.start);
+// clockFirst.addClock('00:00' , clockFirst.start);
+// clockFirst.start();
+// console.log(clockFirst.alarmCollection);
