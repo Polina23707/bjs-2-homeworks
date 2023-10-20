@@ -33,16 +33,18 @@ class AlarmClock {
       return;
     }
     
-    this.intervalId = setInterval(checkClock(this.alarmCollection), 1000)
+    this.intervalId = setInterval(() => {
+      // console.log(this);
+      if (this.alarmCollection.length > 0) {
+        this.alarmCollection.forEach((clock) => {
+          if (clock.time === this.getCurrentFormattedTime() && clock.canCall === true) {
+            clock.canCall = false;
+            clock.callback();
+          }
+        })
+      }
+    }, 1000)
 
-    function checkClock(clocks) {
-      clocks.forEach((clock) => {
-        if (clock.time === clock.getCurrentFormattedTime && clock.canCall === true) {
-          clock.canCall = false;
-          clock.callback();
-        }
-      })
-    }
   }
 
   stop() {
